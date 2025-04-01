@@ -16,5 +16,5 @@ Batch-Based Traffic Congestion Analyzer
 - **Python** – for data simulation and scripting  
 - **Apache Spark (PySpark)** – batch processing engine  
 - **Parquet** – efficient file-based data storage  
-- **Streamlit / Jupyter** – data exploration and visualization  
-- **Docker** – containerized pipeline (optional)  
+- **Jupyter** – data exploration and visualization  
+- **Docker** – containerized pipeline 
