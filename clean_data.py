@@ -45,6 +45,9 @@ df_clean = df_clean.filter(
 )
 df_clean = df_clean.withColumn("timestamp", to_timestamp("timestamp", "yyyy-MM-dd HH:mm:ss"))
 
+# Cache transformation to avoid recomputation before actions
+df_clean = df_clean.cache()
+
 # Count 
 count = df_clean.count()
 print(f"Cleaned records count: {count}")
