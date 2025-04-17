@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import to_timestamp
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType, TimestampType
 import os
 
 # Created Spark Session for reading CSV file, clearing, and saving in .parquet format
@@ -10,11 +11,20 @@ spark = SparkSession.builder \
 input_path = os.path.abspath("data/raw/traffic_data.csv")
 print(f"Reading CSV from: {input_path}")
 
+#set True - because will do data clearing in next step
+schema = StructType([
+    StructField("timestamp", StringType(), True),
+    StructField("car_id", IntegerType(), True),
+    StructField("speed", DoubleType(), True),
+    StructField("lat", DoubleType(), True),
+    StructField("lon", DoubleType(), True),
+    StructField("road_id", IntegerType(), True)
+])
 # Read CSV
 df = spark.read.csv(
     input_path,
     header=True,
-    inferSchema=True
+    schema=schema
 )
 
 print("Raw Data Schema:")
@@ -23,7 +33,7 @@ df.printSchema()
 print("Sample data:")
 df.show(5)
 
-# Drop nulls
+# Next step - clearing data -- dropping null values --
 df_clean = df.dropna(subset=["timestamp", "car_id", "speed", "lat", "lon", "road_id"])
 
 # Filtering
