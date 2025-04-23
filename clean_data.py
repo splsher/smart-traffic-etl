@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import to_timestamp
+from pyspark.sql.functions import to_timestamp, col
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType, TimestampType
 import os
 
@@ -41,10 +41,12 @@ df_clean = df.dropna(subset=["timestamp", "car_id", "speed", "lat", "lon", "road
 
 # Filtering
 df_clean = df_clean.filter(
-    (df_clean.speed >= 0) &
-    (df_clean.speed <= 130) &
-    (df_clean.lat != 0) &
-    (df_clean.lon != 0)
+    (col("speed") >=  0)&
+    (col("speed") <= 130)&
+    (col("lat").isNotNull())&
+    (col("lat") != 0)&
+    (col("lon").isNotNull())&
+    (col("lon") != 0)
 )
 df_clean = df_clean.withColumn("timestamp", to_timestamp("timestamp", "yyyy-MM-dd HH:mm:ss"))
 
@@ -67,7 +69,7 @@ if count > 0:
 
     # to avoid Windows error
     spark.conf.set("spark.hadoop.io.native.lib.available", "false")
-    
+
     # added coalesce to transformation to ensure that only one file will be written
     try:
        df_clean.coalesce(1).write.mode('overwrite').parquet(output_path)
