@@ -7,6 +7,8 @@ import os
 spark = SparkSession.builder \
     .appName("TrafficDataCleaning") \
     .config("spark.hadoop.hadoop.native.lib", "false") \
+    .config("spark.sql.sources.commitProtocolClass", "org.apache.spark.internal.io.HadoopMapReduceCommitProtocol") \
+    .config("spark.sql.parquet.enableVectorizedReader", "false") \
     .getOrCreate()
 
 input_path = os.path.abspath("data/raw/traffic_data.csv")
@@ -58,10 +60,10 @@ if count > 0:
     output_path = os.path.abspath("output/cleaned_traffic_data/")
     print(f"Saving cleaned data to: {output_path}")
 
-    # df_clean.coalesce(1).write.mode('overwrite').parquet(output_path)
-    # print("Successfully saved as one file")
+    # added coalesce to transformation to ensure that only one file will be written
     try:
        df_clean.coalesce(1).write.mode('overwrite').parquet(output_path)
+       print("Successfully saved as one file")
     except Exception as e:
        print("Write failed:", e)
 
