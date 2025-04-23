@@ -48,6 +48,11 @@ df_clean = df_clean.filter(
 )
 df_clean = df_clean.withColumn("timestamp", to_timestamp("timestamp", "yyyy-MM-dd HH:mm:ss"))
 
+#see the logical and physical plans 
+print("---------------------------------------------------")
+df_clean.explain(True)
+print("---------------------------------------------------")
+
 # Cache transformation to avoid recomputation before actions
 df_clean = df_clean.cache()
 
@@ -60,10 +65,17 @@ if count > 0:
     output_path = os.path.abspath("output/cleaned_traffic_data/")
     print(f"Saving cleaned data to: {output_path}")
 
+    # to avoid Windows error
+    spark.conf.set("spark.hadoop.io.native.lib.available", "false")
+    
     # added coalesce to transformation to ensure that only one file will be written
     try:
        df_clean.coalesce(1).write.mode('overwrite').parquet(output_path)
        print("Successfully saved as one file")
+       #see the logical and physical plans 
+       print("---------------------------------------------------")
+       df_clean.explain(True)
+       print("---------------------------------------------------")
     except Exception as e:
        print("Write failed:", e)
 
