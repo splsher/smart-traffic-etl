@@ -23,6 +23,7 @@ schema = StructType([
     StructField("lon", DoubleType(), True),
     StructField("road_id", IntegerType(), True)
 ])
+
 # Read CSV
 df = spark.read.csv(
     input_path,
@@ -81,8 +82,6 @@ if count > 0:
     except Exception as e:
        print("Write failed:", e)
 
-    df_clean.write.mode('overwrite').parquet(output_path)
-    print("Write complete.")
 else:
     print("No valid records found after cleaning.")
 
